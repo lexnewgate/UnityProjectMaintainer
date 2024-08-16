@@ -1,31 +1,80 @@
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 
 namespace Sunflower.ProjectMaintainer
 {
     public static class BrokenPrefabUtility
     {
-        public static bool IsPrefabMissing(GameObject go)
+        public enum AssetType
         {
-            if (go == null)
+            None,
+            Prefab,
+            Scene
+        }
+
+        public static void CollectMissingPrefabGuidsByFolderPath(string folderPath, List<string> missingGuids)
+        {
+            var ownerGuids = new List<string>();
+            ownerGuids.AddRange(AssetDatabase.FindAssets("t:Scene", new[] { folderPath }));
+            ownerGuids.AddRange(AssetDatabase.FindAssets("t:Prefab", new[] { folderPath }));
+
+            foreach (var ownerGuid in ownerGuids)
             {
-                return false;
+                var path = AssetDatabase.GUIDToAssetPath(ownerGuid);
+                CollectMissingPrefabGuidsByAssetPath(path, missingGuids);
+            }
+        }
+
+        public static void CollectMissingPrefabGuidsByAssetPath(string assetPath, List<string> guids)
+        {
+            var assetType = GetAssetTypeByPath(assetPath);
+            if (assetType == AssetType.Prefab)
+            {
+                var go = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
+                if (go == null)
+                {
+                    return;
+                }
+
+                CollectMissingPrefabGuids(go, guids);
+            }
+            else if (assetType == AssetType.Scene)
+            {
+                var scene = EditorSceneManager.OpenScene(assetPath);
+                CollectMissingPrefabGuids(scene, guids);
+            }
+        }
+
+        public static AssetType GetAssetTypeByPath(string assetPath)
+        {
+            if (assetPath.EndsWith(".prefab", System.StringComparison.OrdinalIgnoreCase))
+            {
+                return AssetType.Prefab;
             }
 
-            var prefabStatus = PrefabUtility.GetPrefabInstanceStatus(go);
-            
-            return prefabStatus == PrefabInstanceStatus.MissingAsset;
+            if (assetPath.EndsWith(".unity", System.StringComparison.OrdinalIgnoreCase))
+            {
+                return AssetType.Scene;
+            }
+
+            return AssetType.None;
+        }
+
+        public static void CollectMissingPrefabGuids(Scene scene, List<string> guids)
+        {
+            var rootGos = scene.GetRootGameObjects();
+            foreach (var rootGo in rootGos)
+            {
+                CollectMissingPrefabGuids(rootGo, guids);
+            }
         }
 
         public static string GetMissingPrefabGuid(GameObject go)
         {
-            if (!IsPrefabMissing(go))
-            {
-                return string.Empty;
-            }
-            
             var so = new SerializedObject(go);
             var prop = so.GetIterator();
             while (prop.Next(true))
@@ -36,19 +85,22 @@ namespace Sunflower.ProjectMaintainer
                 var assetPath = AssetDatabase.GetAssetPath(prop.objectReferenceInstanceIDValue);
                 return AssetDatabase.AssetPathToGUID(assetPath);
             }
-            
+
             return string.Empty;
         }
 
-        public static void CollectMissingPrefabGuids(GameObject go,IList<string>guids,bool recursive=true)
+        public static void CollectMissingPrefabGuids(GameObject go, IList<string> guids)
         {
-            var children=go.GetComponentsInChildren<Transform>(recursive);
+            var children = go.GetComponentsInChildren<Transform>(true);
             foreach (var child in children)
             {
-                if (IsPrefabMissing(child.gameObject))
+                var missingPrefabGuid = GetMissingPrefabGuid(child.gameObject);
+                if (string.IsNullOrEmpty(missingPrefabGuid))
                 {
-                    guids.Add(GetMissingPrefabGuid(child.gameObject));
+                    continue;
                 }
+
+                guids.Add(GetMissingPrefabGuid(child.gameObject));
             }
         }
     }
