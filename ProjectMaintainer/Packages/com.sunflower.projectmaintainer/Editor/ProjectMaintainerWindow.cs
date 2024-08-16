@@ -13,6 +13,8 @@ namespace Sunflower.ProjectMaintainer
         private string m_searchRootStr;
         private string m_assetPathStr;
         private string m_outResultPath;
+        private string m_inputFilePath;
+        private string m_outputPath;
 
         [MenuItem("Tools/Project Maintainer")]
         public static void ShowExample()
@@ -51,7 +53,25 @@ namespace Sunflower.ProjectMaintainer
             button2.text = "Detect";
             button2.clickable.clicked += OnDetect;
             root.Add(button2);
+            
+            root.Add(new Label("Output missing id paths:"));
+            var inputIdsField= new TextField();
+            inputIdsField.RegisterValueChangedCallback((evt => { m_inputFilePath= evt.newValue; }));
+            root.Add(inputIdsField);
+            var outputPathField = new TextField();
+            outputPathField.RegisterValueChangedCallback((evt => { m_outputPath= evt.newValue; }));
+            root.Add(outputPathField);
+            var button3 = new Button();
+            button3.text = "OutputPathsFromInstanceIds";
+            button3.clickable.clicked += OnOutputPathsFromInstanceIds;
+            root.Add(button3);
+        }
 
+        private void OnOutputPathsFromInstanceIds()
+        {
+           var instanceIDs= File.ReadAllLines(this.m_inputFilePath);
+           var paths= instanceIDs.Select(AssetDatabase.GUIDToAssetPath).ToArray();
+           File.WriteAllLines(this.m_outputPath,paths);
         }
 
         private void OnDetect()
