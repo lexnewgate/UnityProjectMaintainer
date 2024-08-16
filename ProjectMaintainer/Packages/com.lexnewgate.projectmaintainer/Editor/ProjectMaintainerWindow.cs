@@ -32,6 +32,8 @@ namespace Sunflower.ProjectMaintainer
             searchRootField.RegisterValueChangedCallback((evt => { m_searchRootStr = evt.newValue; }));
             root.Add(searchRootField);
             
+            
+            root.Add(new Label("OutputPath:"));
             var outResultField = new TextField();
             outResultField.RegisterValueChangedCallback((evt => { m_outResultPath = evt.newValue; }));
             root.Add(outResultField);
