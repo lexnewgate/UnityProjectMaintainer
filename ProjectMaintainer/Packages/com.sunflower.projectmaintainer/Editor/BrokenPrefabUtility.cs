@@ -16,7 +16,7 @@ namespace Sunflower.ProjectMaintainer
             Scene
         }
 
-        public static void CollectMissingPrefabInstanceIdsByFolderPath(string folderPath, List<string> missingGuids)
+        public static void CollectMissingPrefabInstanceIdsByFolderPath(string folderPath, HashSet<string> missingGuids)
         {
             var ownerGuids = new List<string>();
             ownerGuids.AddRange(AssetDatabase.FindAssets("t:Scene", new[] { folderPath }));
@@ -29,7 +29,7 @@ namespace Sunflower.ProjectMaintainer
             }
         }
 
-        public static void CollectMissingPrefabInstanceIDsByAssetPath(string assetPath, List<string> guids)
+        public static void CollectMissingPrefabInstanceIDsByAssetPath(string assetPath, HashSet<string> guids)
         {
             var assetType = GetAssetTypeByPath(assetPath);
             if (assetType == AssetType.Prefab)
@@ -64,7 +64,7 @@ namespace Sunflower.ProjectMaintainer
             return AssetType.None;
         }
 
-        public static void CollectMissingPrefabInstanceIds(Scene scene, List<string> guids)
+        public static void CollectMissingPrefabInstanceIds(Scene scene, HashSet<string> guids)
         {
             var rootGos = scene.GetRootGameObjects();
             foreach (var rootGo in rootGos)
@@ -88,7 +88,7 @@ namespace Sunflower.ProjectMaintainer
             return string.Empty;
         }
 
-        public static void CollectMissingPrefabInstanceIds(GameObject go, IList<string> guids)
+        public static void CollectMissingPrefabInstanceIds(GameObject go, HashSet<string> guids)
         {
             var children = go.GetComponentsInChildren<Transform>(true);
             foreach (var child in children)

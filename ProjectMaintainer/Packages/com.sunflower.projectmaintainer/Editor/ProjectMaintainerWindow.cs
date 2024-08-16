@@ -56,7 +56,7 @@ namespace Sunflower.ProjectMaintainer
 
         private void OnDetect()
         {
-            var instanceIds = new List<string>();
+            var instanceIds = new HashSet<string>();
             BrokenPrefabUtility.CollectMissingPrefabInstanceIDsByAssetPath(this.m_assetPathStr, instanceIds);
             foreach (var instanceID in instanceIds)
             {
@@ -67,7 +67,7 @@ namespace Sunflower.ProjectMaintainer
 
         private void OnSearch()
         {
-            var missingInstanceIds = new List<string>();
+            var missingInstanceIds = new HashSet<string>();
             BrokenPrefabUtility.CollectMissingPrefabInstanceIdsByFolderPath(this.m_searchRootStr, missingInstanceIds);
 
             foreach (var missingInstanceID in missingInstanceIds)
