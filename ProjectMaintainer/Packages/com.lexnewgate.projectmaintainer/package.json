@@ -1,0 +1,27 @@
+{
+    "name": "com.lexnewgate.projectmaintainer",
+    "version": "1.0.0",
+    "displayName": "Project Maintainer",
+    "description": "Utility for maintaining Unity projects.",
+    "unity": "2020.3",
+    "documentationUrl": "https://example.com/",
+    "changelogUrl": "https://example.com/changelog.html",
+    "licensesUrl": "https://example.com/licensing.html",
+    "author": {
+      "name": "lexnewgate",
+      "email": "lexnewgate@outlook.com",
+      "url": "https://www.unity3d.com"
+    },
+    "samples":[ 
+        {
+        "displayName": "Sample1",
+        "description": "A sample package.",
+        "path": "Samples~/SampleA"
+        },
+        {
+        "displayName": "Sample2",
+        "description": "A sample package.",
+        "path": "Samples~/SampleB"
+        }
+    ]
+  }
