@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.sunflower.projectmaintainer": {
-      "version": "file:com.lexnewgate.projectmaintainer",
+      "version": "file:com.sunflower.projectmaintainer",
       "depth": 0,
       "source": "embedded",
       "dependencies": {}

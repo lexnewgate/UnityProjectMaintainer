@@ -56,30 +56,29 @@ namespace Sunflower.ProjectMaintainer
 
         private void OnDetect()
         {
-            var guids = new List<string>();
-            BrokenPrefabUtility.CollectMissingPrefabGuidsByAssetPath(this.m_assetPathStr, guids);
-            foreach (var guid in guids)
+            var instanceIds = new List<string>();
+            BrokenPrefabUtility.CollectMissingPrefabInstanceIDsByAssetPath(this.m_assetPathStr, instanceIds);
+            foreach (var instanceID in instanceIds)
             {
-                var output = $"guid:\n{guid}\noriginal path:\n{AssetDatabase.GUIDToAssetPath(guid)}";
+                var output = $"instance id:\n{instanceID}";
                 Debug.Log(output);
             }
         }
 
         private void OnSearch()
         {
-            var missingGuids = new List<string>();
-            BrokenPrefabUtility.CollectMissingPrefabGuidsByFolderPath(this.m_searchRootStr, missingGuids);
+            var missingInstanceIds = new List<string>();
+            BrokenPrefabUtility.CollectMissingPrefabInstanceIdsByFolderPath(this.m_searchRootStr, missingInstanceIds);
 
-            foreach (var missingGuid in missingGuids)
+            foreach (var missingInstanceID in missingInstanceIds)
             {
-                var output = $"guid:\n{missingGuid}\noriginal path:\n{AssetDatabase.GUIDToAssetPath(missingGuid)}";
+                var output = $"missing instanceId:\n{missingInstanceID}\noriginal path:\n{AssetDatabase.GUIDToAssetPath(missingInstanceID)}";
                 Debug.Log(output);
             }
 
             if (!string.IsNullOrEmpty(this.m_outResultPath))
             {
-                var missAssetPaths = missingGuids.Select(guid => AssetDatabase.GUIDToAssetPath(guid));
-                File.WriteAllLines(this.m_outResultPath, missAssetPaths);
+                File.WriteAllLines(this.m_outResultPath, missingInstanceIds);
             }
         }
     }
