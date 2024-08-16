@@ -63,42 +63,43 @@ namespace Sunflower.ProjectMaintainer
             root.Add(outputPathField);
             var button3 = new Button();
             button3.text = "OutputPathsFromInstanceIds";
-            button3.clickable.clicked += OnOutputPathsFromInstanceIds;
+            button3.clickable.clicked += OnOutputPathsFromGuids;
             root.Add(button3);
         }
 
-        private void OnOutputPathsFromInstanceIds()
+        private void OnOutputPathsFromGuids()
         {
-           var instanceIDs= File.ReadAllLines(this.m_inputFilePath);
-           var paths= instanceIDs.Select(AssetDatabase.GUIDToAssetPath).ToArray();
+           var guids= File.ReadAllLines(this.m_inputFilePath);
+           var paths= guids.Select(AssetDatabase.GUIDToAssetPath).ToArray();
            File.WriteAllLines(this.m_outputPath,paths);
         }
 
         private void OnDetect()
         {
-            var instanceIds = new HashSet<string>();
-            BrokenPrefabUtility.CollectMissingPrefabInstanceIDsByAssetPath(this.m_assetPathStr, instanceIds);
-            foreach (var instanceID in instanceIds)
+            var guids = new HashSet<string>();
+            BrokenPrefabUtility.CollectMissingPrefabGuidsByAssetPath(this.m_assetPathStr, guids);
+            foreach (var guid in guids)
             {
-                var output = $"instance id:\n{instanceID}";
+                var output = $"instance id:\n{guid}";
+                Debug.Log(AssetDatabase.GUIDToAssetPath(guid));
                 Debug.Log(output);
             }
         }
 
         private void OnSearch()
         {
-            var missingInstanceIds = new HashSet<string>();
-            BrokenPrefabUtility.CollectMissingPrefabInstanceIdsByFolderPath(this.m_searchRootStr, missingInstanceIds);
+            var missingGuids = new HashSet<string>();
+            BrokenPrefabUtility.CollectMissingPrefabGuidsByFolderPath(this.m_searchRootStr, missingGuids);
 
-            foreach (var missingInstanceID in missingInstanceIds)
+            foreach (var missingGuid in missingGuids)
             {
-                var output = $"missing instanceId:\n{missingInstanceID}\noriginal path:\n{AssetDatabase.GUIDToAssetPath(missingInstanceID)}";
+                var output = $"missing guid:\n{missingGuid}\noriginal path:\n{AssetDatabase.GUIDToAssetPath(missingGuid)}";
                 Debug.Log(output);
             }
 
             if (!string.IsNullOrEmpty(this.m_outResultPath))
             {
-                File.WriteAllLines(this.m_outResultPath, missingInstanceIds);
+                File.WriteAllLines(this.m_outResultPath, missingGuids);
             }
         }
     }
